@@ -57,7 +57,7 @@ app.get('/api/image', async c => {
   try {
     const target = requireParam(c, 'url');
     const url = parseUrl(target);
-    ensureAllowedHost(url, c.env.ALLOWLIST_EXTRA);
+    ensureAllowedHost(url, c.env?.ALLOWLIST_EXTRA);
 
     let response: Response;
     try {
@@ -79,51 +79,6 @@ app.get('/api/image', async c => {
       status: response.status,
       headers
     });
-  } catch (error) {
-    if (error instanceof AppError) {
-      return jsonError(c, error);
-    }
-    return jsonError(
-      c,
-      new AppError('E_UPSTREAM_FAILED', 502, 'Upstream fetch failed', 'Try again or check provider availability.')
-    );
-  }
-});
-
-app.get('/api/html-image', async c => {
-  try {
-    const page = requireParam(c, 'page');
-    const selector = c.req.query('selector') ?? 'img';
-    const url = parseUrl(page);
-    ensureAllowedHost(url, c.env.ALLOWLIST_EXTRA);
-
-    let upstream: Response;
-    try {
-      upstream = await fetch(url.toString(), {
-        cf: { cacheTtl: 60, cacheEverything: true }
-      });
-    } catch (error) {
-      throw new AppError('E_UPSTREAM_FAILED', 502, 'Upstream fetch failed', 'Try again or check provider availability.');
-    }
-
-    let found: string | undefined;
-    const rewriter = new HTMLRewriter().on(selector, {
-      element(el) {
-        if (found) return;
-        const src = el.getAttribute('src');
-        if (src) {
-          found = new URL(src, url.toString()).toString();
-        }
-      }
-    });
-
-    await rewriter.transform(upstream).text();
-
-    if (!found) {
-      throw new AppError('E_NO_IMAGE_FOUND', 404, 'No matching image found', 'Update selector or source page.');
-    }
-
-    return c.redirect(`/api/image?url=${encodeURIComponent(found)}`, 302);
   } catch (error) {
     if (error instanceof AppError) {
       return jsonError(c, error);
