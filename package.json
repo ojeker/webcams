@@ -3,6 +3,10 @@
   "private": true,
   "packageManager": "pnpm@9.12.3",
   "scripts": {
-    "test": "pnpm -C apps/worker test"
+    "dev": "pnpm -C apps/worker dev",
+    "test": "pnpm -C apps/worker test",
+    "ci:test": "pnpm test",
+    "ci:build": "echo \"build not configured\"",
+    "ci:lint": "echo \"lint not configured\""
   }
 }
