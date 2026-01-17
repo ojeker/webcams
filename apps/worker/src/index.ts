@@ -53,6 +53,15 @@ function jsonError(c: Parameters<typeof app.get>[1], error: AppError) {
   });
 }
 
+function createHtmlRewriter() {
+  const HTMLRewriterCtor = (globalThis as typeof globalThis & { HTMLRewriter?: typeof HTMLRewriter })
+    .HTMLRewriter;
+  if (!HTMLRewriterCtor) {
+    throw new AppError('E_UPSTREAM_FAILED', 502, 'HTML parser unavailable', 'Try again later.');
+  }
+  return new HTMLRewriterCtor();
+}
+
 app.get('/api/image', async c => {
   try {
     const target = requireParam(c, 'url');
@@ -79,6 +88,59 @@ app.get('/api/image', async c => {
       status: response.status,
       headers
     });
+  } catch (error) {
+    if (error instanceof AppError) {
+      return jsonError(c, error);
+    }
+    return jsonError(
+      c,
+      new AppError('E_UPSTREAM_FAILED', 502, 'Upstream fetch failed', 'Try again or check provider availability.')
+    );
+  }
+});
+
+app.get('/api/html-image', async c => {
+  try {
+    const page = requireParam(c, 'page');
+    const selector = c.req.query('selector') || 'img';
+    const pageUrl = parseUrl(page);
+    ensureAllowedHost(pageUrl, c.env?.ALLOWLIST_EXTRA);
+
+    let response: Response;
+    try {
+      response = await fetch(pageUrl.toString(), {
+        cf: { cacheTtl: 60, cacheEverything: true },
+        headers: {
+          'User-Agent': 'WebcamSun/1.0',
+          Referer: `${pageUrl.origin}/`
+        }
+      });
+    } catch {
+      throw new AppError('E_UPSTREAM_FAILED', 502, 'Upstream fetch failed', 'Try again or check provider availability.');
+    }
+
+    if (!response.ok) {
+      throw new AppError('E_UPSTREAM_FAILED', 502, 'Upstream fetch failed', 'Try again or check provider availability.');
+    }
+
+    let found: string | undefined;
+    const rewriter = createHtmlRewriter().on(selector, {
+      element(el) {
+        if (found) return;
+        const src = el.getAttribute('src');
+        if (src) {
+          found = new URL(src, pageUrl).toString();
+        }
+      }
+    });
+
+    await rewriter.transform(response).text();
+
+    if (!found) {
+      throw new AppError('E_NO_IMAGE_FOUND', 404, 'No image found', 'Check selector or upstream page.');
+    }
+
+    return c.redirect(`/api/image?url=${encodeURIComponent(found)}`, 302);
   } catch (error) {
     if (error instanceof AppError) {
       return jsonError(c, error);

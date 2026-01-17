@@ -29,3 +29,28 @@ paths:
           description: Forbidden host
         '5XX':
           description: Upstream error
+  /api/html-image:
+    get:
+      summary: Extract first matching image from a page then redirect to /api/image
+      parameters:
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: string
+            format: uri
+        - in: query
+          name: selector
+          required: false
+          schema:
+            type: string
+            default: img
+      responses:
+        '302':
+          description: Redirects to /api/image?url=...
+        '400':
+          description: Missing/invalid page
+        '403':
+          description: Forbidden host
+        '404':
+          description: No matching image

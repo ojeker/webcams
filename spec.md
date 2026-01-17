@@ -108,14 +108,14 @@ webcams:
     name: Känerkinden Webcams
     elevation_m_asl: 0 # TODO
     coord_ch2056: { e: 0, n: 0 } # TODO
-    source: { kind: page, page: "https://www.inubis.ch/kaenerkinden-webcams/", selector: "img" }
+    source: { kind: snapshot, url: "https://inubis.multipixx.net/currentPixx/17" }
     refresh: { seconds: 60 }
 
   - id: wasserflue
     name: Wasserflue Aarau
     elevation_m_asl: 0 # TODO
     coord_ch2056: { e: 0, n: 0 } # TODO
-    source: { kind: page, page: "https://www.wasserflue-aarau.ch/", selector: "img" }
+    source: { kind: snapshot, url: "https://webcam.wasserflue-aarau.ch/pos5.jpg" }
     refresh: { seconds: 60 }
 
   - id: roundshot-roggenberg
@@ -128,7 +128,7 @@ webcams:
     name: Seilpark Balmberg
     elevation_m_asl: 0 # TODO
     coord_ch2056: { e: 0, n: 0 } # TODO
-    source: { kind: iframe, url: "https://www.seilpark-balmberg.ch/aktuell/" }
+    source: { kind: snapshot, url: "https://seilpark-balmberg.multipixx.net/currentPixx/19" }
 ```
 
 ### Coordinate Handling
@@ -234,7 +234,7 @@ export const root = z.object({ settings, webcams: z.array(webcam).min(1) });
 // /apps/worker/src/index.ts
 import { Hono } from 'hono';
 const app = new Hono();
-const ALLOW = new Set(['cam.hupplodge.ch','www.barmelweid.ch','deinkick.ch','roggenberg.roundshot.com','www.seilpark-balmberg.ch','www.inubis.ch','www.wasserflue-aarau.ch']);
+const ALLOW = new Set(['cam.hupplodge.ch','www.barmelweid.ch','deinkick.ch','roggenberg.roundshot.com','seilpark-balmberg.multipixx.net','inubis.multipixx.net','webcam.wasserflue-aarau.ch']);
 
 app.get('/api/image', async c => {
   const target = c.req.query('url'); if (!target) return c.text('Missing url', 400);

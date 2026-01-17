@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev --local",
+    "check:multipixx": "node scripts/check-multipixx.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
