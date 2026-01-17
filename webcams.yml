@@ -1,0 +1,25 @@
+settings:
+  user_coord_ch2056: { e: 2683400, n: 1245600 }
+  units: metric
+  worker_base_url: "http://127.0.0.1:8787"
+
+webcams:
+  - id: barmelweid
+    name: Aussicht Barmelweid
+    elevation_m_asl: 900
+    coord_ch2056: { e: 2640000, n: 1230000 }
+    source:
+      kind: snapshot
+      url: "https://www.barmelweid.ch/aussicht_barmelweid/Bilder/LatestImage.jpg"
+    attribution: "Barmelweid"
+    refresh: { seconds: 30 }
+
+  - id: hupplodge
+    name: Hupp Lodge Axis
+    elevation_m_asl: 1500
+    coord_ch2056: { e: 2730000, n: 1180000 }
+    source:
+      kind: snapshot
+      url: "https://cam.hupplodge.ch:50001/axis-cgi/jpg/image.cgi?resolution=1280x720&compression=60&fps=1"
+    attribution: "Hupp Lodge"
+    refresh: { seconds: 10 }
