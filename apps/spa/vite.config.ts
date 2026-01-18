@@ -46,11 +46,15 @@ function webcamsYamlPlugin(options: WebcamsPluginOptions) {
 const workerDevUrl = process.env.WORKER_DEV_URL || 'http://127.0.0.1:8787';
 
 export default defineConfig({
+  base: '/sunfinder/',
   plugins: [vue(), webcamsYamlPlugin({ workspaceRoot, filename: 'webcams.yml' })],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
     }
+  },
+  test: {
+    environment: 'jsdom'
   },
   server: {
     fs: {

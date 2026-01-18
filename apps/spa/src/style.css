@@ -85,11 +85,19 @@ strong {
   aspect-ratio: 1 / 1;
 }
 
-.card__image img {
+.card__image-preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.card__image-action {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
 }
 
 .card__image-placeholder {
@@ -142,4 +150,47 @@ strong {
 .stat__value {
   font-size: 0.9rem;
   color: #3f342a;
+}
+
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 18, 16, 0.9);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  z-index: 1000;
+}
+
+.fullscreen__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 20px 8px;
+}
+
+.fullscreen__close {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff5ea;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.fullscreen__stage {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  display: grid;
+  place-items: center;
+}
+
+.fullscreen__image {
+  max-width: none;
+  max-height: none;
+  width: min(90vw, 1200px);
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  transform-origin: center;
 }

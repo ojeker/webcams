@@ -1,14 +1,13 @@
 <template>
   <main>
-    <h1>Webcam Sunline</h1>
-    <p>Loaded from the repo root configuration.</p>
+    <h1>Sunfinder</h1>
 
     <div v-if="error" class="error">{{ error }}</div>
 
     <template v-else>
       <p v-if="!config">Loading webcams…</p>
       <ul v-else class="webcam-grid">
-        <li v-for="webcam in config.webcams" :key="webcam.id">
+        <li v-for="webcam in sortedWebcams" :key="webcam.id">
           <WebcamCard
             :webcam="webcam"
             :user-coord="config.settings.user_coord_ch2056"
@@ -23,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import type { RootConfig } from '@webcam-sunline/config/parse';
 import { loadConfig } from './services/configLoader';
 import WebcamCard from './components/WebcamCard.vue';
@@ -31,6 +30,13 @@ import WebcamCard from './components/WebcamCard.vue';
 const config = ref<RootConfig | null>(null);
 const error = ref<string | null>(null);
 const isPaused = ref(false);
+
+const sortedWebcams = computed(() => {
+  if (!config.value) {
+    return [];
+  }
+  return [...config.value.webcams].sort((a, b) => a.elevation_m_asl - b.elevation_m_asl);
+});
 
 function updateVisibility() {
   isPaused.value = document.hidden;
